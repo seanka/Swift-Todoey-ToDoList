@@ -10,12 +10,12 @@ import CoreData
 
 class ToDoListViewController: UITableViewController {
     
-    var dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var itemArray = [Item]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         loadItems()
     }
     
@@ -42,8 +42,6 @@ class ToDoListViewController: UITableViewController {
         
         saveItems()
         
-        tableView.reloadData()
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -57,7 +55,6 @@ class ToDoListViewController: UITableViewController {
             
             self.itemArray.append(newItem)
             self.saveItems()
-            self.tableView.reloadData()
         }
         
         alert.addTextField{(alertTextField) in
@@ -76,16 +73,29 @@ class ToDoListViewController: UITableViewController {
         } catch {
             print("Error saving data \(error)")
         }
+        tableView.reloadData()
     }
     
-    func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do{
             itemArray = try context.fetch(request)
         } catch{
             print("Error fetching data \(error)")
         }
+        tableView.reloadData()
     }
     
+}
+
+// MARK: - Search bar method
+
+extension ToDoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems(with: request)
+    }
 }
 
