@@ -16,6 +16,7 @@ class ToDoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadItems()
     }
     
     // MARK: - TableView Datasource Methods
@@ -74,6 +75,15 @@ class ToDoListViewController: UITableViewController {
             try context.save()
         } catch {
             print("Error saving data \(error)")
+        }
+    }
+    
+    func loadItems() {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        do{
+            itemArray = try context.fetch(request)
+        } catch{
+            print("Error fetching data \(error)")
         }
     }
     
