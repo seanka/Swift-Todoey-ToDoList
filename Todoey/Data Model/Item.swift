@@ -9,8 +9,8 @@ import Foundation
 import RealmSwift
 
 class ItemRealm: Object {
-    dynamic var name: String = ""
-    dynamic var done: Bool = false
+    @objc dynamic var name: String = ""
+    @objc dynamic var done: Bool = false
     
     var parentCategory = LinkingObjects(fromType: CategoryRealm.self, property: "items")
 }

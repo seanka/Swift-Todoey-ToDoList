@@ -7,15 +7,24 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 class ToDoListViewController: UITableViewController {
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var itemArray = [Item]()
     
-    var selectedCategory: Category? {
+    //core data
+//    var selectedCategory: Category? {
+//        didSet{
+//            loadItems()
+//        }
+//    }
+    
+    //realm
+    var selectedCategory: CategoryRealm? {
         didSet{
-            loadItems()
+            //loadItems()
         }
     }
     
@@ -56,7 +65,7 @@ class ToDoListViewController: UITableViewController {
             let newItem = Item(context: self.context)
             newItem.title = textField.text!
             newItem.done = false
-            newItem.parentCategory = self.selectedCategory
+            //newItem.parentCategory = self.selectedCategory
             
             self.itemArray.append(newItem)
             self.saveItems()
@@ -81,23 +90,23 @@ class ToDoListViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
-        
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
-            request.predicate = categoryPredicate
-        }
-        
-        do{
-            itemArray = try context.fetch(request)
-        } catch{
-            print("Error fetching data \(error)")
-        }
-        tableView.reloadData()
-    }
+//    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+//
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+//
+//        if let additionalPredicate = predicate {
+//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+//        } else {
+//            request.predicate = categoryPredicate
+//        }
+//
+//        do{
+//            itemArray = try context.fetch(request)
+//        } catch{
+//            print("Error fetching data \(error)")
+//        }
+//        tableView.reloadData()
+//    }
     
 }
 
@@ -109,12 +118,12 @@ extension ToDoListViewController: UISearchBarDelegate {
         request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
-        loadItems(with: request)
+        //loadItems(with: request)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
-            loadItems()
+            //loadItems()
             
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()

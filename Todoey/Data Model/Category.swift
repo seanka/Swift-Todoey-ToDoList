@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 class CategoryRealm: Object {
-    dynamic var name: String = ""
+    @objc dynamic var name: String = ""
     
     let items = List<ItemRealm>()
 }
