@@ -26,6 +26,18 @@ class CategoryViewController: SwipeTableViewController {
         tableView.separatorStyle = .none
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation Controller does not Exist")}
+        
+        let bar = UINavigationBarAppearance()
+
+        bar.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        bar.backgroundColor = UIColor(hexString: "444dce")
+        
+        navBar.standardAppearance = bar
+        navBar.scrollEdgeAppearance = bar
+    }
+    
     // MARK: - TableView DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -39,13 +51,18 @@ class CategoryViewController: SwipeTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
-        cell.backgroundColor = UIColor(hexString: categoriesRealm?[indexPath.row].color ?? "007AFF")
-        
         //core Data
         //cell.textLabel?.text = categories[indexPath.row].name
         
         //realm
-        cell.textLabel?.text = categoriesRealm?[indexPath.row].name ?? "No Categories Added yet"
+        if let category = categoriesRealm?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
+            
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+            cell.backgroundColor = categoryColor
+        }
         
         return cell
     }
@@ -146,6 +163,8 @@ class CategoryViewController: SwipeTableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
