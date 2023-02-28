@@ -94,7 +94,7 @@ class ToDoListViewController: UITableViewController {
                     try self.realm.write {
                         let newItem = ItemRealm()
                         newItem.title = textField.text!
-                        currentCategory.items.append(newItem)
+                        currentCategory.itemsRealm.append(newItem)
                     }
                 } catch {
                     print("Error saving data \(error )")
@@ -142,7 +142,7 @@ class ToDoListViewController: UITableViewController {
     }
     
     func loadRealmItems() {
-        todoItemsRealm  = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        todoItemsRealm  = selectedCategory?.itemsRealm.sorted(byKeyPath: "title", ascending: true)
         
         tableView.reloadData()
     }

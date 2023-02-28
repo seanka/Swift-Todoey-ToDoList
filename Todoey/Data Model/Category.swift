@@ -11,5 +11,5 @@ import RealmSwift
 class CategoryRealm: Object {
     @objc dynamic var name: String = ""
     
-    let items = List<ItemRealm>()
+    let itemsRealm = List<ItemRealm>()
 }
