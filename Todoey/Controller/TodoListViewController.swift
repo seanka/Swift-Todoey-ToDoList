@@ -107,6 +107,7 @@ class ToDoListViewController: UITableViewController {
                     try self.realm.write {
                         let newItem = ItemRealm()
                         newItem.title = textField.text!
+                        newItem.dateCreated = Date()
                         currentCategory.itemsRealm.append(newItem)
                     }
                 } catch {
@@ -166,16 +167,22 @@ class ToDoListViewController: UITableViewController {
 
 extension ToDoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        Core Data
+//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        loadItems(with: request)
         
-        //loadItems(with: request)
+//        Realm
+        todoItemsRealm = todoItemsRealm?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: false)
+        
+        tableView.reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             //loadItems()
+            loadRealmItems()
             
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
