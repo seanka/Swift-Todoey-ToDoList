@@ -151,7 +151,17 @@ extension CategoryViewController: SwipeTableViewCellDelegate {
         guard orientation == .right else { return nil }
 
         let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            // handle action by updating model with deletion
+            if let categoryForDeletion = self.categoriesRealm?[indexPath.row] {
+                do {
+                    try self.realm.write{
+                        self.realm.delete(categoryForDeletion)
+                    }
+                } catch {
+                    print("Error deleting data \(error)")
+                }
+                
+                tableView.reloadData() 
+            }
         }
 
         // customize the action appearance
