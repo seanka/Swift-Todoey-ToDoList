@@ -19,11 +19,11 @@ class ToDoListViewController: UITableViewController {
     
     
     //core data
-//    var selectedCategory: Category? {
-//        didSet{
-//            loadItems()
-//        }
-//    }
+    //    var selectedCategory: Category? {
+    //        didSet{
+    //            loadItems()
+    //        }
+    //    }
     
     //realm
     var selectedCategory: CategoryRealm? {
@@ -68,9 +68,22 @@ class ToDoListViewController: UITableViewController {
     // MARK: - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        //coreData
+        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        //saveItems()
         
-        saveItems()
+        //realm
+        if let item = todoItemsRealm?[indexPath.row] {
+            do{
+                try realm.write {
+                    item.done = !item.done
+                }
+            } catch {
+                print("Error updating done status \(error)")
+            }
+        }
+        
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -124,15 +137,15 @@ class ToDoListViewController: UITableViewController {
     }
     
     func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
-
+        
         let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name)
-
+        
         if let additionalPredicate = predicate {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
         } else {
             request.predicate = categoryPredicate
         }
-
+        
         do{
             itemArray = try context.fetch(request)
         } catch{
@@ -167,7 +180,7 @@ extension ToDoListViewController: UISearchBarDelegate {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
-           
+            
         }
     }
 }
